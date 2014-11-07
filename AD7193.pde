@@ -959,10 +959,11 @@ float convertToVolts(unsigned long data, float vRef)
 
 void setup()
 {
-  #define CHANNEL AD7193_CH_0
+  #define CHANNEL AD7193_CH_1
 //  #define CHANNEL_NAME #CHANNEL#
   Serial.begin(9600);
-  Serial.println("DAQ.cerebot AD7193 v0.1.2");
+  Serial.println("DAQ.cerebot AD7193 v0.1.2.CH1");
+  delay(5000);// wait a while so AD7193 startup
   if(myAD7193.Init())
   {
       Serial.println("AD7193 OK");
@@ -994,13 +995,13 @@ void loop()
 {
 
   unsigned long data = 0;
-  data = myAD7193.ContinuousReadAvg(100);
+  data = myAD7193.ContinuousReadAvg(10);
   //data = AD7193_ContinuousReadAvg(1000);//return an average of 1000 convertion on selected channel
   float volt= myAD7193.BinaryToVoltage(data);// convert binary data to volt
   Serial.print("volt=");
   Serial.print(volt,DEC);// print the voltage of selected channel
   Serial.print("  data=");
   Serial.println(data,DEC);
-  delay(500);// wait a while
+  delay(10);// wait a while
 }
 
