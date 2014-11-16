@@ -959,10 +959,11 @@ float convertToVolts(unsigned long data, float vRef)
 
 void setup()
 {
-  #define CHANNEL AD7193_CH_1
+  #define CHANNEL1 AD7193_CH_0
+  #define CHANNEL2 AD7193_CH_1
 //  #define CHANNEL_NAME #CHANNEL#
   Serial.begin(9600);
-  Serial.println("DAQ.cerebot AD7193 v0.1.2.CH1");
+  Serial.println("DAQ.cerebot AD7193 v0.1.3.CH0n1");
   delay(5000);// wait a while so AD7193 startup
   if(myAD7193.Init())
   {
@@ -974,10 +975,14 @@ void setup()
   }
   /*! Resets the device. */
     myAD7193.Reset();
-    /*! Select Channel 0 */
-    myAD7193.ChannelSelect(CHANNEL);
-    /*! Calibrates channel 0. */
-    myAD7193.Calibrate(AD7193_MODE_CAL_INT_ZERO, CHANNEL);
+    /*! Select Channel 1 */
+    myAD7193.ChannelSelect(CHANNEL1);
+    /*! Calibrates channel 1. */
+    myAD7193.Calibrate(AD7193_MODE_CAL_INT_ZERO, CHANNEL1);
+    /*! Select Channel 2 */
+    myAD7193.ChannelSelect(CHANNEL2);
+    /*! Calibrates channel 2. */
+    myAD7193.Calibrate(AD7193_MODE_CAL_INT_ZERO, CHANNEL2);
     /*! Selects unipolar operation and ADC's input range to +-2.5V. */
     myAD7193.RangeSetup(0, AD7193_CONF_GAIN_1);
     regValue = myAD7193.GetRegisterValue(AD7193_REG_CONF, 3, 1);  
@@ -994,14 +999,27 @@ void setup()
 void loop()
 {
 
-  unsigned long data = 0;
-  data = myAD7193.ContinuousReadAvg(10);
-  //data = AD7193_ContinuousReadAvg(1000);//return an average of 1000 convertion on selected channel
-  float volt= myAD7193.BinaryToVoltage(data);// convert binary data to volt
-  Serial.print("volt=");
-  Serial.print(volt,DEC);// print the voltage of selected channel
-  Serial.print("  data=");
-  Serial.println(data,DEC);
+  unsigned long data1=0;
+  /*! Select Channel 1 */
+  myAD7193.ChannelSelect(CHANNEL1);
+  data1 = myAD7193.ContinuousReadAvg(10);
+
+  unsigned long data2=0;
+  /*! Select Channel 2 */
+  myAD7193.ChannelSelect(CHANNEL2);
+  data2 = myAD7193.ContinuousReadAvg(10);
+
+  float volt1= myAD7193.BinaryToVoltage(data1);// convert binary data to volt
+  Serial.print("volt1=");
+  Serial.print(volt1,DEC);// print the voltage of selected channel
+  Serial.print("  data1=");
+  Serial.print(data1,DEC);
+
+  float volt2= myAD7193.BinaryToVoltage(data2);// convert binary data to volt
+  Serial.print("  volt2=");
+  Serial.print(volt2,DEC);// print the voltage of selected channel
+  Serial.print("  data2=");
+  Serial.println(data2,DEC);
   delay(10);// wait a while
 }
 
