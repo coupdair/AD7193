@@ -983,8 +983,8 @@ void setup()
     myAD7193.ChannelSelect(CHANNEL2);
     /*! Calibrates channel 2. */
     myAD7193.Calibrate(AD7193_MODE_CAL_INT_ZERO, CHANNEL2);
-    /*! Selects unipolar operation and ADC's input range to +-2.5V. */
-    myAD7193.RangeSetup(0, AD7193_CONF_GAIN_1);
+    /*! Selects unipolar operation and ADC's input range to 1=+-2.5V, 8=+-312.5 mV */
+    myAD7193.RangeSetup(0, AD7193_CONF_GAIN_8);
     regValue = myAD7193.GetRegisterValue(AD7193_REG_CONF, 3, 1);  
     regValue |= AD7193_CONF_PSEUDO ;
     myAD7193.SetRegisterValue(AD7193_REG_CONF, regValue, 3, 1);
