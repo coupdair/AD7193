@@ -959,7 +959,7 @@ float convertToVolts(unsigned long data, float vRef)
 
 void setup()
 {
-  #define CHANNEL AD7193_CH_1
+  #define CHANNEL AD7193_CH_0
 //  #define CHANNEL_NAME #CHANNEL#
   Serial.begin(9600);
   Serial.println("DAQ.cerebot AD7193 v0.1.2.CH1");
