@@ -964,7 +964,7 @@ void setup()
   #define CHANNEL3 AD7193_CH_2
 //  #define CHANNEL_NAME #CHANNEL#
   Serial.begin(9600);
-  Serial.println("DAQ.cerebot AD7193 v0.1.4.CH0n1n2");
+  Serial.println("DAQ.cerebot AD7193 v0.1.5.TnCH0n1n2");
   delay(5000);// wait a while so AD7193 startup
   if(myAD7193.Init())
   {
@@ -1019,8 +1019,13 @@ void loop()
   myAD7193.ChannelSelect(CHANNEL3);
   data3 = myAD7193.ContinuousReadAvg(10);
 
+  /*! Select Channel TEMPERATURE */
+  unsigned long dataT=myAD7193.TemperatureRead();
+  Serial.print("dataT=");
+  Serial.print(dataT,DEC);
+
   float volt1= myAD7193.BinaryToVoltage(data1);// convert binary data to volt
-  Serial.print("volt1=");
+  Serial.print("  volt1=");
   Serial.print(volt1,DEC);// print the voltage of selected channel
   Serial.print("  data1=");
   Serial.print(data1,DEC);
