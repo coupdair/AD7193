@@ -964,7 +964,7 @@ void setup()
   #define CHANNEL3 AD7193_CH_2
 //  #define CHANNEL_NAME #CHANNEL#
   Serial.begin(9600);
-  Serial.println("DAQ.cerebot AD7193 v0.1.5.TnCH0n1n2");
+  Serial.println("DAQ.cerebot AD7193 v0.1.5.TnCH0n1n2_g8");
   delay(5000);// wait a while so AD7193 startup
   if(myAD7193.Init())
   {
@@ -989,7 +989,7 @@ void setup()
     /*! Calibrates channel 3. */
     myAD7193.Calibrate(AD7193_MODE_CAL_INT_ZERO, CHANNEL3);
     /*! Selects unipolar operation and ADC's input range to 1=+-2.5V, 8=+-312.5 mV */
-    myAD7193.RangeSetup(0, AD7193_CONF_GAIN_1);
+    myAD7193.RangeSetup(0, AD7193_CONF_GAIN_8);
     regValue = myAD7193.GetRegisterValue(AD7193_REG_CONF, 3, 1);  
     regValue |= AD7193_CONF_PSEUDO ;
     myAD7193.SetRegisterValue(AD7193_REG_CONF, regValue, 3, 1);
@@ -1020,7 +1020,8 @@ void loop()
   data3 = myAD7193.ContinuousReadAvg(10);
 
   /*! Select Channel TEMPERATURE */
-  unsigned long dataT=myAD7193.TemperatureRead();
+//  unsigned long dataT=myAD7193.TemperatureRead();
+  unsigned long dataT=-99;
   Serial.print("dataT=");
   Serial.print(dataT,DEC);
 
