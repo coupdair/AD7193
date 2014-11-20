@@ -214,7 +214,7 @@ public:
 	unsigned long ContinuousReadAvg(unsigned char sampleNumber);
 
 	/*! Read data from temperature sensor and converts it to Celsius degrees. */
-	unsigned long TemperatureRead(void);
+	float TemperatureRead(void);
 	
 	/*! Converts raw data read from ADC to a voltage value. */
 	double BinaryToVoltage(long rawData);

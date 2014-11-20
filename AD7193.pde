@@ -718,11 +718,11 @@ unsigned long AD7193::ContinuousReadAvg(unsigned char sampleNumber)
 
 *******************************************************************************/
 
-unsigned long AD7193::TemperatureRead(void)
+float AD7193::TemperatureRead(void)
 
 {
 
-    unsigned char temperature = 0x0;
+    float temperature;
 
     unsigned long dataReg = 0x0;
 
@@ -746,18 +746,15 @@ unsigned long AD7193::TemperatureRead(void)
 
     dataReg -= 0x800000;
 
-    dataReg /= 2815;   /*!< Kelvin Temperature */
-
-    dataReg -= 273;    /*!< Celsius Temperature */
-
-    temperature = (unsigned long) dataReg;
-
     SetRegisterValue(AD7193_REG_MODE, oldRegValue, 3, 1);
 
     /*! Set back the old configuration. */
 
-	SetRegisterValue(AD7193_REG_CONF, oldConfReg, 3, 1);
+    SetRegisterValue(AD7193_REG_CONF, oldConfReg, 3, 1);
 
+    temperature=float(dataReg)/2815.0;   /*!< Kelvin Temperature */
+
+    temperature-= 273.0;    /*!< Celsius Temperature */
     
 
 	return(temperature);
@@ -957,6 +954,8 @@ float convertToVolts(unsigned long data, float vRef)
   return( vRef*((float)data) / maxData);
 }
 
+  //1=+-2.5V, 8=+-312.5 mV
+  #define GAIN AD7193_CONF_GAIN_8
 void setup()
 {
   #define CHANNEL1 AD7193_CH_0
@@ -964,7 +963,7 @@ void setup()
   #define CHANNEL3 AD7193_CH_2
 //  #define CHANNEL_NAME #CHANNEL#
   Serial.begin(9600);
-  Serial.println("DAQ.cerebot AD7193 v0.1.5.TnCH0n1n2_g8");
+  Serial.println("DAQ.cerebot AD7193 v0.1.6.TnCH0n1n2_g8");
   delay(5000);// wait a while so AD7193 startup
   if(myAD7193.Init())
   {
@@ -988,8 +987,8 @@ void setup()
     myAD7193.ChannelSelect(CHANNEL3);
     /*! Calibrates channel 3. */
     myAD7193.Calibrate(AD7193_MODE_CAL_INT_ZERO, CHANNEL3);
-    /*! Selects unipolar operation and ADC's input range to 1=+-2.5V, 8=+-312.5 mV */
-    myAD7193.RangeSetup(0, AD7193_CONF_GAIN_8);
+    /*! Selects unipolar operation and ADC's input range to */
+    myAD7193.RangeSetup(0, GAIN);
     regValue = myAD7193.GetRegisterValue(AD7193_REG_CONF, 3, 1);  
     regValue |= AD7193_CONF_PSEUDO ;
     myAD7193.SetRegisterValue(AD7193_REG_CONF, regValue, 3, 1);
@@ -1020,8 +1019,8 @@ void loop()
   data3 = myAD7193.ContinuousReadAvg(10);
 
   /*! Select Channel TEMPERATURE */
-//  unsigned long dataT=myAD7193.TemperatureRead();
-  unsigned long dataT=-99;
+  float dataT=myAD7193.TemperatureRead();
+  myAD7193.RangeSetup(0, GAIN);
   Serial.print("dataT=");
   Serial.print(dataT,DEC);
 
