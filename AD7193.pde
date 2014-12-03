@@ -954,6 +954,52 @@ float convertToVolts(unsigned long data, float vRef)
   return( vRef*((float)data) / maxData);
 }
 
+//{heart
+
+//#define LED_PIN PIN_LED1
+#define LED_PIN PIN_LED2
+
+void heart_setup()
+{
+  pinMode(PIN_LED1, OUTPUT);     
+  pinMode(PIN_LED2, OUTPUT);     
+  digitalWrite(PIN_LED1, LOW);    // set the LED off
+  digitalWrite(PIN_LED2, LOW);    // set the LED off
+}
+
+void heart()//~450ms
+{
+//heart
+///boum
+digitalWrite(LED_PIN,HIGH);
+delay(150);
+///off
+digitalWrite(LED_PIN,LOW);
+delay(150);
+///tac
+digitalWrite(LED_PIN,HIGH);
+delay(150);
+///off
+digitalWrite(LED_PIN,LOW);
+}
+
+//}heart
+
+int gToggle;
+void toggle()
+{
+  if(gToggle==0)
+  {
+    digitalWrite(PIN_LED1,HIGH);
+    gToggle=1;
+  }
+  else
+  {
+    digitalWrite(PIN_LED1,LOW);
+    gToggle=0;
+  }
+}
+
 //Pin of Analog Input, i.e. reading value pin
 #define AI_NB 8
 unsigned long  sensorValue[AI_NB];
@@ -965,9 +1011,11 @@ int n=0;
 
 void setup()
 {
+  heart_setup();
+  heart();
   Serial.begin(9600);
-  Serial.println("DAQ.cerebot AD7193 v0.1.7.TnCH0-7");
-  delay(5000);// wait a while so AD7193 startup
+  Serial.println("DAQ.cerebot AD7193 v0.1.8.TnCH0-7_g8");
+  for(int i=0;i<5;++i) {heart();delay(567);}// wait a while so AD7193 startup
   if(myAD7193.Init())
   {
       Serial.println("AD7193 OK");
@@ -1000,7 +1048,6 @@ void setup()
 *******************************************************************************/
 void loop()
 {
-
   //! read channels
   for(int i=0;i<AI_NB;++i)
   {
@@ -1008,6 +1055,7 @@ void loop()
     myAD7193.ChannelSelect(sensorPin[i]);
     //! read value
     sensorValue[i]=myAD7193.ContinuousReadAvg(10);
+    toggle();
   }
 
   //! read channel TEMPERATURE
@@ -1033,6 +1081,9 @@ void loop()
   }//AI loop
   Serial.print("\r\n");
   
-  delay(12);// wait a while
+  // wait a while
+  //for(int i=0;i<2;++i) {heart();delay(567);}//~1s per iteration
+  heart();//~450ms
+  //delay(12);
 }
 
