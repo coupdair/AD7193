@@ -954,16 +954,19 @@ float convertToVolts(unsigned long data, float vRef)
   return( vRef*((float)data) / maxData);
 }
 
-  //1=+-2.5V, 8=+-312.5 mV
-  #define GAIN AD7193_CONF_GAIN_8
+//Pin of Analog Input, i.e. reading value pin
+#define AI_NB 8
+unsigned long  sensorValue[AI_NB];
+unsigned short sensorPin[]={AD7193_CH_0,AD7193_CH_1,AD7193_CH_2,AD7193_CH_3,AD7193_CH_4,AD7193_CH_5,AD7193_CH_6,AD7193_CH_7};//AD7193
+//1=+-2.5V, 8=+-312.5 mV
+#define GAIN AD7193_CONF_GAIN_8
+
+int n=0;
+
 void setup()
 {
-  #define CHANNEL1 AD7193_CH_0
-  #define CHANNEL2 AD7193_CH_1
-  #define CHANNEL3 AD7193_CH_2
-//  #define CHANNEL_NAME #CHANNEL#
   Serial.begin(9600);
-  Serial.println("DAQ.cerebot AD7193 v0.1.6.TnCH0n1n2_g8");
+  Serial.println("DAQ.cerebot AD7193 v0.1.7.TnCH0-7");
   delay(5000);// wait a while so AD7193 startup
   if(myAD7193.Init())
   {
@@ -974,25 +977,20 @@ void setup()
       Serial.println("AD7193 Error");
   }
   /*! Resets the device. */
-    myAD7193.Reset();
-    /*! Select Channel 1 */
-    myAD7193.ChannelSelect(CHANNEL1);
-    /*! Calibrates channel 1. */
-    myAD7193.Calibrate(AD7193_MODE_CAL_INT_ZERO, CHANNEL1);
-    /*! Select Channel 2 */
-    myAD7193.ChannelSelect(CHANNEL2);
-    /*! Calibrates channel 2. */
-    myAD7193.Calibrate(AD7193_MODE_CAL_INT_ZERO, CHANNEL2);
-    /*! Select Channel 3 */
-    myAD7193.ChannelSelect(CHANNEL3);
-    /*! Calibrates channel 3. */
-    myAD7193.Calibrate(AD7193_MODE_CAL_INT_ZERO, CHANNEL3);
-    /*! Selects unipolar operation and ADC's input range to */
-    myAD7193.RangeSetup(0, GAIN);
-    regValue = myAD7193.GetRegisterValue(AD7193_REG_CONF, 3, 1);  
-    regValue |= AD7193_CONF_PSEUDO ;
-    myAD7193.SetRegisterValue(AD7193_REG_CONF, regValue, 3, 1);
-    Serial.println("OK");
+  myAD7193.Reset();
+  for(int i=0;i<AI_NB;++i)
+  {
+    //! Select Channel
+    myAD7193.ChannelSelect(sensorPin[i]);
+    //! Calibrates channel
+    myAD7193.Calibrate(AD7193_MODE_CAL_INT_ZERO,sensorPin[i]);
+  }//calibrate channel loop
+  /*! Selects unipolar operation and ADC's input range to */
+  myAD7193.RangeSetup(0, GAIN);
+  regValue = myAD7193.GetRegisterValue(AD7193_REG_CONF, 3, 1);  
+  regValue |= AD7193_CONF_PSEUDO ;
+  myAD7193.SetRegisterValue(AD7193_REG_CONF, regValue, 3, 1);
+  Serial.println("OK");
 }
 
 /***************************************************************************//**
@@ -1003,45 +1001,38 @@ void setup()
 void loop()
 {
 
-  unsigned long data1=0;
-  /*! Select Channel 1 */
-  myAD7193.ChannelSelect(CHANNEL1);
-  data1 = myAD7193.ContinuousReadAvg(10);
+  //! read channels
+  for(int i=0;i<AI_NB;++i)
+  {
+    //! select Channel
+    myAD7193.ChannelSelect(sensorPin[i]);
+    //! read value
+    sensorValue[i]=myAD7193.ContinuousReadAvg(10);
+  }
 
-  unsigned long data2=0;
-  /*! Select Channel 2 */
-  myAD7193.ChannelSelect(CHANNEL2);
-  data2 = myAD7193.ContinuousReadAvg(10);
-
-  unsigned long data3=0;
-  /*! Select Channel 3 */
-  myAD7193.ChannelSelect(CHANNEL3);
-  data3 = myAD7193.ContinuousReadAvg(10);
-
-  /*! Select Channel TEMPERATURE */
+  //! read channel TEMPERATURE
   float dataT=myAD7193.TemperatureRead();
   myAD7193.RangeSetup(0, GAIN);
-  Serial.print("dataT=");
+
+  //! send on serial
+  ///module
+  Serial.print("PAR;");
+  Serial.print(n++,DEC);
+  ///temperature
+  Serial.print(";");
   Serial.print(dataT,DEC);
-
-  float volt1= myAD7193.BinaryToVoltage(data1);// convert binary data to volt
-  Serial.print("  volt1=");
-  Serial.print(volt1,DEC);// print the voltage of selected channel
-  Serial.print("  data1=");
-  Serial.print(data1,DEC);
-
-  float volt2= myAD7193.BinaryToVoltage(data2);// convert binary data to volt
-  Serial.print("  volt2=");
-  Serial.print(volt2,DEC);// print the voltage of selected channel
-  Serial.print("  data2=");
-  Serial.print(data2,DEC);
-
-  float volt3= myAD7193.BinaryToVoltage(data3);// convert binary data to volt
-  Serial.print("  volt3=");
-  Serial.print(volt3,DEC);// print the voltage of selected channel
-  Serial.print("  data3=");
-  Serial.println(data3,DEC);
-
-  delay(10);// wait a while
+  ///values
+  for(int i=0;i<AI_NB;++i)
+  {
+    unsigned long data=sensorValue[i];
+    Serial.print(";");
+    Serial.print(data,DEC);
+    float volt=myAD7193.BinaryToVoltage(data);// convert binary data to volt
+    Serial.print(";");
+    Serial.print(volt,DEC);
+  }//AI loop
+  Serial.print("\r\n");
+  
+  delay(12);// wait a while
 }
 
