@@ -1001,7 +1001,7 @@ void toggle()
 }
 
 //Pin of Analog Input, i.e. reading value pin
-#define AI_NB 8
+#define AI_NB 3
 unsigned long  sensorValue[AI_NB];
 unsigned short sensorPin[]={AD7193_CH_0,AD7193_CH_1,AD7193_CH_2,AD7193_CH_3,AD7193_CH_4,AD7193_CH_5,AD7193_CH_6,AD7193_CH_7};//AD7193
 //1=+-2.5V, 8=+-312.5 mV
@@ -1014,7 +1014,7 @@ void setup()
   heart_setup();
   heart();
   Serial.begin(9600);
-  Serial.println("DAQ.cerebot AD7193 v0.1.8.TnCH0-7_g8");
+  Serial.println("DAQ.cerebot AD7193 v0.1.8.TnCH0-2_g8");
   for(int i=0;i<5;++i) {heart();delay(567);}// wait a while so AD7193 startup
   if(myAD7193.Init())
   {
