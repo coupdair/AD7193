@@ -1,0 +1,11 @@
+~/code.Xsensor/IDE/mpIDE/mpide-0023-linux64-20130715/mpide
+#Ctrl+O : open AD7193/AD7193.pde
+#unplug/replug cerebot BEFORE uploading (each time)
+#Ctrl+R : compile and upload
+
+exit
+
+#upload program (.hex)
+/home/coudert/code.Xsensor/IDE/mpIDE/mpide-0023-linux64-20130715/hardware/tools/avrdude -C/home/coudert/code.Xsensor/IDE/mpIDE/mpide-0023-linux64-20130715/hardware/tools/avrdude.conf \
+  -q -q -p32MX320F128H -cstk500v2 -P/dev/ttyUSB0 -b115200 -D \
+  -Uflash:w:/tmp/build967625606346212591.tmp/AD7193.cpp.hex:i
