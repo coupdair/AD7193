@@ -1,0 +1,3 @@
+to do:
+
+_ add auto channel and gain informations (based on #define cst).
