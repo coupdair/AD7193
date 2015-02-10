@@ -1001,11 +1001,12 @@ void toggle()
 }
 
 //Pin of Analog Input, i.e. reading value pin
-#define AI_NB 6
+#define AI_NB   6
+#define AI_GAIN 8
 unsigned long  sensorValue[AI_NB];
 unsigned short sensorPin[]={AD7193_CH_0,AD7193_CH_1,AD7193_CH_2,AD7193_CH_3,AD7193_CH_4,AD7193_CH_5,AD7193_CH_6,AD7193_CH_7};//AD7193
 //1=+-2.5V, 8=+-312.5 mV
-#define GAIN AD7193_CONF_GAIN_8
+#define GAIN AD7193_CONF_GAIN_##AI_GAIN
 
 int n=0;
 
