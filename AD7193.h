@@ -51,10 +51,10 @@
 /******************* Macros and Constants Definitions *************************/
 /******************************************************************************/
 /*! Communication definitions */
-#define AD7193_CS_PIN 			PIN_DSPI0_SS
+#define AD7193_CS_PIN 			PIN_DSPI1_SS
 #define DEVICE_SPI_CLK_FREQ     1000000	/*!< 1MHz SPI clock frequency */
 /*! AD7193 GPIO */
-#define AD7193_RDY_STATE       (PIN_DSPI0_SS + 2) /*!< MISO pin */
+#define AD7193_RDY_STATE       (PIN_DSPI1_SS + 2) /*!< MISO pin */
 
 /*! AD7193 Register Map */
 #define AD7193_REG_COMM         0 /*!< Communications Register (WO, 8-bit) */
@@ -170,7 +170,7 @@
 class AD7193
 {
 private:
-	DSPI0 oDspi;
+	DSPI1 oDspi;
 	char mGain;
 	char mPolarity;
 	double mVref;
