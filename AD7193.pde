@@ -180,7 +180,7 @@ unsigned char AD7193::Init(void)
 
 	oDspi.begin(AD7193_CS_PIN);
 
-	oDspi.setMode(DSPI_MODE1);
+	oDspi.setMode(DSPI_MODE3);
 
 	oDspi.setSpeed(DEVICE_SPI_CLK_FREQ);
 
